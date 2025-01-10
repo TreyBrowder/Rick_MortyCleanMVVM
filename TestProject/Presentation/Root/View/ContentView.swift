@@ -10,24 +10,24 @@ import SwiftUI
 struct ContentView: View {
     @State var personVM: PersonVM
     
-    init(getAllPeopleUseCaseService: GetAllPeopleUseCaseProtocol) {
-        _personVM = State(wrappedValue: PersonVM(service: getAllPeopleUseCaseService))
+    init(personVM: PersonVM) {
+        _personVM = State(wrappedValue: personVM)
     }
     
     var body: some View {
         NavigationStack(){
             List {
-                ForEach(0 ..< 25) { index in
+                ForEach(personVM.personArr, id: \.name) { person in
                     HStack(spacing: 4) {
                         Image(systemName: "person.circle")
                             .resizable()
                             .frame(width: 64, height: 64)
                         
                         VStack(alignment: .leading){
-                            Text("Name")
+                            Text(person.name)
                                 .font(.system(size: 26, weight: .bold))
                             
-                            Text("Status")
+                            Text(person.status)
                                 .font(.system(size: 18, weight: .semibold))
                         }
                     }
@@ -37,9 +37,8 @@ struct ContentView: View {
             .listStyle(.plain)
             .navigationTitle("Characters")
         }
+        .task {
+            await personVM.getAllCharacter()
+        }
     }
-}
-
-#Preview {
-    ContentView()
 }
